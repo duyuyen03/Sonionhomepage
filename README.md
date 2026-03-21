@@ -3,69 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Gửi Thông báo Nội bộ</title>
+    <title>Quản Trị Viên - Sonion</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; height: 100vh; background-color: #f4f7f6; }
-        /* Sidebar */
-        .sidebar { width: 250px; background-color: #2c3e50; color: white; padding: 20px 0; flex-shrink: 0; }
-        .sidebar h2 { text-align: center; font-size: 1.2rem; margin-bottom: 30px; color: #ecf0f1; }
-        .tab-btn { width: 100%; border: none; background: none; color: #bdc3c7; padding: 15px 20px; text-align: left; cursor: pointer; font-size: 1rem; transition: 0.3s; }
-        .tab-btn:hover { background-color: #34495e; color: white; }
-        .tab-btn.active { background-color: #3498db; color: white; border-left: 5px solid #fff; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background-color: #f0f2f5; overflow: hidden; }
         
-        /* Main Content */
-        .content { flex-grow: 1; padding: 40px; overflow-y: auto; }
-        .tab-content { display: none; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 800px; }
+        /* Sidebar sát lề trái */
+        .sidebar { width: 280px; background-color: #2c3e50; color: white; flex-shrink: 0; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 25px; text-align: center; font-weight: bold; font-size: 1.2rem; border-bottom: 1px solid #3e4f5f; }
+        .tab-btn { width: 100%; border: none; background: none; color: #bdc3c7; padding: 18px 25px; text-align: left; cursor: pointer; font-size: 1rem; transition: 0.3s; }
+        .tab-btn:hover { background-color: #34495e; color: white; }
+        .tab-btn.active { background-color: #3498db; color: white; }
+
+        /* Vùng nội dung */
+        .main-container { flex-grow: 1; overflow-y: auto; padding: 40px; }
+        .tab-content { display: none; max-width: 900px; margin: 0 auto; }
         .tab-content.active { display: block; }
 
-        h3 { margin-top: 0; color: #2c3e50; }
-        label { display: block; margin: 15px 0 5px; font-weight: bold; }
-        input, textarea, border { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button.btn-send { background-color: #27ae60; color: white; border: none; padding: 12px 25px; border-radius: 4px; cursor: pointer; margin-top: 20px; font-size: 1rem; }
-        button.btn-send:hover { background-color: #219150; }
-        .template-link { display: inline-block; margin-bottom: 15px; color: #3498db; text-decoration: none; font-weight: bold; cursor: pointer; }
-        #status { margin-top: 20px; padding: 10px; border-radius: 4px; display: none; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        h3 { margin-top: 0; color: #1a2a3a; border-left: 4px solid #3498db; padding-left: 15px; }
+        
+        input, textarea { width: 100%; padding: 12px; margin: 10px 0 20px 0; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; }
+        button { cursor: pointer; border: none; border-radius: 6px; font-weight: 600; transition: 0.2s; }
+        .btn-send { background-color: #27ae60; color: white; padding: 12px 30px; width: 100%; }
+        .btn-send:hover { background-color: #2ecc71; }
+        
+        /* Lịch sử gửi tin */
+        .history-section { margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px; }
+        .history-item { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #95a5a6; }
+        .history-item small { color: #7f8c8d; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <h2>QUẢN TRỊ VIÊN</h2>
-        <button class="tab-btn active" onclick="openTab(event, 'thong-bao-chung')">📢 Thông báo chung</button>
-        <button class="tab-btn" onclick="openTab(event, 'gui-nhan-vien')">👥 Gửi đến nhân viên</button>
+        <div class="sidebar-header">QUẢN TRỊ VIÊN</div>
+        <button class="tab-btn active" onclick="openTab(event, 'tab-all')">📢 Thông báo chung</button>
+        <button class="tab-btn" onclick="openTab(event, 'tab-excel')">👥 Gửi đến nhân viên</button>
     </div>
 
-    <div class="content">
-        
-        <div id="thong-bao-chung" class="tab-content active">
-            <h3>Gửi thông báo toàn công ty</h3>
-            <p><small>Thông báo này sẽ được n8n gửi đến danh sách email mặc định (Toàn bộ nhân viên).</small></p>
-            
-            <label>Tiêu đề:</label>
-            <input type="text" id="subject-all" placeholder="Ví dụ: Thông báo nghỉ lễ 2/9">
-            
-            <label>Nội dung thông báo:</label>
-            <textarea id="message-all" rows="8" placeholder="Nhập nội dung chi tiết..."></textarea>
-            
-            <button class="btn-send" onclick="sendData('all')">🚀 Gửi toàn bộ nhân viên</button>
-        </div>
-
-        <div id="gui-nhan-vien" class="tab-content">
-            <h3>Gửi thông báo theo danh sách Excel</h3>
-            
-            <div class="template-box">
-                <span class="template-link" onclick="downloadTemplate()">📥 Tải file Excel mẫu tại đây</span>
+    <div class="main-container">
+        <div id="tab-all" class="tab-content active">
+            <div class="card">
+                <h3>Gửi thông báo toàn công ty</h3>
+                <label>Tiêu đề:</label>
+                <input type="text" id="subject-all" placeholder="Nhập tiêu đề thông báo...">
+                <label>Nội dung chi tiết:</label>
+                <textarea id="message-all" rows="6" placeholder="Viết nội dung tại đây..."></textarea>
+                <button class="btn-send" onclick="handleSend('all')">🚀 Gửi toàn bộ nhân viên</button>
             </div>
 
-            <label>Chọn file Excel đã nhập liệu:</label>
-            <input type="file" id="fileInput" accept=".xlsx, .xls">
-            <p><small>Hệ thống sẽ tự động lấy Tiêu đề, Nội dung và Email từ từng dòng trong file.</small></p>
-            
-            <button class="btn-send" onclick="sendData('excel')">📤 Tải lên và Gửi ngay</button>
+            <div class="history-section">
+                <h4>🕒 Lịch sử đã gửi (Gần đây)</h4>
+                <div id="history-list-all"></div>
+            </div>
         </div>
 
-        <div id="status"></div>
+        <div id="tab-excel" class="tab-content">
+            <div class="card">
+                <h3>Gửi theo danh sách Excel</h3>
+                <p style="color: #666;">Hệ thống sẽ gửi email riêng biệt cho từng người trong file.</p>
+                <button onclick="downloadTemplate()" style="background: none; color: #3498db; text-decoration: underline; padding: 0; margin-bottom: 20px;">📥 Tải file mẫu tại đây</button>
+                
+                <label>Chọn file dữ liệu (.xlsx):</label>
+                <input type="file" id="fileInput" accept=".xlsx, .xls">
+                <button class="btn-send" onclick="handleSend('excel')">📤 Tải lên & Chạy n8n</button>
+            </div>
+
+            <div class="history-section">
+                <h4>🕒 Lịch sử gửi theo file</h4>
+                <div id="history-list-excel"></div>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
