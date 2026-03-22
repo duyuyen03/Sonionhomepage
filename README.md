@@ -15,16 +15,15 @@
             --bg-main: #f8fafc;
             --sidebar: #0f172a;
             --text-main: #1e293b;
-            --glass: rgba(255, 255, 255, 0.8);
+            --glass: rgba(255, 255, 255, 0.9);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        
         body { background-color: var(--bg-main); display: flex; height: 100vh; color: var(--text-main); overflow: hidden; }
 
-        /* Sidebar Design */
-        .sidebar { width: 280px; background: var(--sidebar); color: white; display: flex; flex-direction: column; transition: 0.3s; position: relative; }
-        .sidebar-header { padding: 40px 24px; font-weight: 800; font-size: 1.4rem; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; }
+        /* Sidebar */
+        .sidebar { width: 280px; background: var(--sidebar); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-header { padding: 40px 24px; font-weight: 800; font-size: 1.4rem; display: flex; align-items: center; gap: 10px; }
         .sidebar-header i { color: var(--primary); }
 
         .nav-list { flex: 1; padding: 10px 16px; }
@@ -35,127 +34,103 @@
         .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
         .nav-item.active { background: var(--primary); color: white; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3); }
 
-        /* Main Content Area */
+        /* Main Content */
         .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background: radial-gradient(circle at top right, #e0e7ff, transparent 400px); }
-        
-        header { padding: 30px 50px; display: flex; justify-content: space-between; align-items: center; background: rgba(248, 250, 252, 0.5); backdrop-filter: blur(10px); sticky; top: 0; z-index: 10; }
-        header h1 { font-size: 1.5rem; font-weight: 800; color: #0f172a; }
+        header { padding: 30px 50px; background: rgba(248, 250, 252, 0.5); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #e2e8f0; }
+        header h1 { font-size: 1.5rem; font-weight: 800; }
 
-        .content-body { padding: 0 50px 50px 50px; max-width: 1000px; }
+        .content-body { padding: 40px 50px; max-width: 1000px; width: 100%; margin: 0 auto; }
 
-        /* Card Design */
+        /* Card */
         .glass-card { 
-            background: var(--glass); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.4); 
-            border-radius: 24px; padding: 32px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); margin-bottom: 40px; 
+            background: var(--glass); border: 1px solid rgba(255,255,255,0.4); 
+            border-radius: 24px; padding: 32px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); margin-bottom: 30px; 
         }
 
-        .input-label { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-bottom: 10px; display: block; }
-        
+        .input-label { font-size: 0.85rem; font-weight: 700; color: #64748b; margin-bottom: 10px; display: block; }
         input[type="text"], textarea, input[type="file"] {
-            width: 100%; border: 2px solid #e2e8f0; border-radius: 16px; padding: 14px 20px; font-size: 1rem; transition: 0.2s; background: white; outline: none; margin-bottom: 24px;
+            width: 100%; border: 2px solid #e2e8f0; border-radius: 16px; padding: 14px 20px; font-size: 1rem; transition: 0.2s; background: white; outline: none; margin-bottom: 20px;
         }
         input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
 
         .btn-action {
-            background: var(--primary); color: white; border: none; padding: 16px 32px; border-radius: 16px; font-weight: 700; cursor: pointer; width: 100%; font-size: 1rem;
+            background: var(--primary); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 700; cursor: pointer; width: 100%; font-size: 1rem;
             display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
         }
-        .btn-action:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2); }
+        .btn-action:hover { background: var(--primary-hover); transform: translateY(-2px); }
 
-        /* Feed List Style */
+        /* Feed */
         .feed-item { 
             display: flex; gap: 16px; background: white; padding: 24px; border-radius: 20px; margin-bottom: 16px; 
-            border: 1px solid #f1f5f9; transition: 0.2s; animation: slideIn 0.4s ease-out;
+            border: 1px solid #f1f5f9; animation: slideIn 0.3s ease-out;
         }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .avatar-ui { width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, #6366f1, #a855f7); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
-
-        .msg-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-        .msg-sender { font-weight: 700; color: #0f172a; }
-        .msg-date { font-size: 0.8rem; color: #94a3b8; }
-        .msg-subject { color: var(--primary); font-weight: 800; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 4px; display: block; }
-        .msg-txt { line-height: 1.6; color: #475569; }
-
-        /* Badge for Excel */
-        .excel-tag { background: #f0fdf4; color: #16a34a; padding: 4px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; margin-top: 10px; display: inline-flex; align-items: center; gap: 5px; }
+        .avatar { width: 45px; height: 45px; border-radius: 12px; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+        .msg-sender { font-weight: 700; font-size: 0.95rem; }
+        .msg-time { font-size: 0.8rem; color: #94a3b8; margin-left: 10px; }
+        .msg-subject { color: var(--primary); font-weight: 800; font-size: 0.85rem; text-transform: uppercase; margin: 4px 0; display: block; }
+        .msg-text { color: #475569; line-height: 1.5; white-space: pre-wrap; }
+        .excel-tag { background: #f0fdf4; color: #16a34a; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; }
     </style>
 </head>
 <body>
 
     <nav class="sidebar">
-        <div class="sidebar-header">
-            <i data-lucide="zap"></i> SONION APP
-        </div>
+        <div class="sidebar-header"><i data-lucide="zap"></i> SONION APP</div>
         <div class="nav-list">
-            <button class="nav-item active" onclick="switchTab(this, 'all')">
-                <i data-lucide="megaphone"></i> Thông báo chung
-            </button>
-            <button class="nav-item" onclick="switchTab(this, 'excel')">
-                <i data-lucide="users"></i> Gửi đến nhân viên
-            </button>
+            <button class="nav-item active" id="btn-all" onclick="switchTab('all')"><i data-lucide="megaphone"></i> Thông báo chung</button>
+            <button class="nav-item" id="btn-excel" onclick="switchTab('excel')"><i data-lucide="users"></i> Gửi đến nhân viên</button>
         </div>
     </nav>
 
     <div class="main-wrapper">
-        <header>
-            <h1 id="tab-title">📢 Thông báo chung</h1>
-            <div style="color: #64748b; font-size: 0.9rem; font-weight: 600;">Admin Portal</div>
-        </header>
+        <header><h1 id="tab-title">📢 Thông báo chung</h1></header>
 
         <div class="content-body">
-            <section id="content-all">
+            <div id="section-all" class="tab-pane">
                 <div class="glass-card">
                     <span class="input-label">Tiêu đề thông báo</span>
-                    <input type="text" id="sub-all" placeholder="E.g. THÔNG BÁO MENU TUẦN MỚI">
-                    
-                    <span class="input-label">Nội dung thông điệp</span>
-                    <textarea id="msg-all" rows="4" placeholder="Nhập nội dung bạn muốn gửi..."></textarea>
-                    
-                    <button class="btn-action" onclick="submitSend('all')">
-                        <i data-lucide="send"></i> PHÁT HÀNH THÔNG BÁO
-                    </button>
+                    <input type="text" id="sub-all" placeholder="E.g. MENU TUẦN W12.26">
+                    <span class="input-label">Nội dung</span>
+                    <textarea id="msg-all" rows="4" placeholder="Nhập nội dung..."></textarea>
+                    <button class="btn-action" onclick="processSend('all')"><i data-lucide="send"></i> PHÁT HÀNH</button>
                 </div>
                 <div id="feed-all"></div>
-            </section>
+            </div>
 
-            <section id="content-excel" style="display:none">
+            <div id="section-excel" class="tab-pane" style="display:none">
                 <div class="glass-card">
-                    <h2 style="margin-bottom: 10px; font-size: 1.2rem;">Gửi qua danh sách Excel</h2>
-                    <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Tự động gửi email cá nhân hóa dựa trên dữ liệu file.</p>
-                    
-                    <span class="input-label">Tệp dữ liệu (.xlsx)</span>
+                    <h2 style="margin-bottom: 20px;">Gửi qua danh sách Excel</h2>
+                    <span class="input-label">Chọn tệp dữ liệu</span>
                     <input type="file" id="file-input" accept=".xlsx, .xls">
-                    
-                    <button class="btn-action" onclick="submitSend('excel')" style="background: #0f172a;">
-                        <i data-lucide="file-up"></i> TẢI LÊN & XỬ LÝ GỬI
-                    </button>
-                    
+                    <button class="btn-action" onclick="processSend('excel')" style="background: #0f172a;"><i data-lucide="file-up"></i> TẢI LÊN & GỬI</button>
                     <div style="margin-top: 20px; text-align: center;">
-                        <a href="#" onclick="getTemplate()" style="color: var(--primary); font-size: 0.85rem; font-weight: 700; text-decoration: none;">📥 Tải xuống cấu trúc file mẫu</a>
+                        <a href="#" onclick="exportTemplate()" style="color: var(--primary); font-size: 0.85rem; font-weight: 700; text-decoration: none;">📥 Tải file mẫu</a>
                     </div>
                 </div>
                 <div id="feed-excel"></div>
-            </section>
+            </div>
         </div>
     </div>
 
     <script>
-        // Khởi tạo icons
         lucide.createIcons();
+        const N8N_URL = 'DÁN_LINK_WEBHOOK_N8N_CỦA_BẠN_Ở_ĐÂY';
 
-        const WEBHOOK = 'DÁN_LINK_WEBHOOK_N8N_CỦA_BẠN_Ở_ĐÂY';
-
-        function switchTab(btn, tab) {
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            btn.classList.add('active');
+        function switchTab(tab) {
+            // Cập nhật nút
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('btn-' + tab).classList.add('active');
             
-            document.getElementById('content-all').style.display = tab === 'all' ? 'block' : 'none';
-            document.getElementById('content-excel').style.display = tab === 'excel' ? 'block' : 'none';
+            // Cập nhật nội dung
+            document.getElementById('section-all').style.display = tab === 'all' ? 'block' : 'none';
+            document.getElementById('section-excel').style.display = tab === 'excel' ? 'block' : 'none';
+            
+            // Cập nhật Title
             document.getElementById('tab-title').innerText = tab === 'all' ? '📢 Thông báo chung' : '👥 Gửi đến nhân viên';
         }
 
-        async function submitSend(type) {
+        async function processSend(type) {
             let payload = { type, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
             
             if (type === 'all') {
@@ -173,19 +148,38 @@
             }
 
             try {
-                const res = await fetch(WEBHOOK, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)});
+                const res = await fetch(N8N_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)});
                 if(res.ok) {
-                    addFeedItem(type, payload);
+                    renderFeed(type, payload);
                     if(type === 'all') { document.getElementById('sub-all').value = ''; document.getElementById('msg-all').value = ''; }
                 }
-            } catch(e) { alert("Lỗi kết nối n8n!"); }
+            } catch(e) { alert("Lỗi gửi n8n!"); }
         }
 
-        function addFeedItem(type, data) {
+        function renderFeed(type, data) {
             const container = document.getElementById(type === 'all' ? 'feed-all' : 'feed-excel');
-            const item = document.createElement('div');
-            item.className = 'feed-item';
+            const div = document.createElement('div');
+            div.className = 'feed-item';
             
-            let html = `
-                <div class="avatar-ui">AD</div>
-                <div style="flex:1
+            let html = `<div class="avatar">AD</div><div style="flex:1"><div class="msg-sender">Admin Sonion <span class="msg-time">${data.time}</span></div>`;
+            if(type === 'all') {
+                html += `<span class="msg-subject">${data.subject}</span><div class="msg-text">${data.message}</div>`;
+            } else {
+                html += `<div class="msg-text">Đã xử lý file gửi nhân viên</div><div class="excel-tag"><i data-lucide="file-check" style="width:14px"></i> ${data.filename} (${data.data.length} hàng)</div>`;
+            }
+            html += `</div>`;
+            div.innerHTML = html;
+            container.prepend(div);
+            lucide.createIcons();
+        }
+
+        function exportTemplate() {
+            const data = [["ma_nhan_vien", "tieu_de", "noi_dung", "email"], ["SN01", "Thông báo lương", "Nội dung...", "test@sonion.com"]];
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+            XLSX.writeFile(wb, "Sonion_Template.xlsx");
+        }
+    </script>
+</body>
+</html>
