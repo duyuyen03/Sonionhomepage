@@ -3,95 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Sonion</title>
+    <title>Sonion Admin Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        * { box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; display: flex; height: 100vh; background-color: #ffffff; color: #333; }
+        :root {
+            --sidebar-bg: #1e293b;
+            --primary-color: #3b82f6;
+            --success-color: #10b981;
+            --bg-body: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* Sidebar */
-        .sidebar { width: 260px; background-color: #1e293b; color: white; flex-shrink: 0; display: flex; flex-direction: column; }
-        .sidebar-header { padding: 20px; text-align: center; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #334155; letter-spacing: 1px; }
-        .tab-btn { width: 100%; border: none; background: none; color: #94a3b8; padding: 15px 20px; text-align: left; cursor: pointer; font-size: 0.95rem; transition: 0.2s; display: flex; align-items: center; }
-        .tab-btn:hover { background-color: #334155; color: white; }
-        .tab-btn.active { background-color: #3882f6; color: white; }
-        .tab-btn i { margin-right: 10px; }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background-color: var(--bg-body);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-        /* Main Content */
-        .main-container { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; }
-        .content-header { padding: 15px 30px; border-bottom: 1px solid #eee; background: #f8fafc; font-weight: bold; font-size: 1.2rem; }
-        .tab-content { display: none; padding: 30px; max-width: 800px; margin: 0 auto; width: 100%; }
-        .tab-content.active { display: block; }
+        /* Sidebar cố định bên trái */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
 
-        /* Form Card */
-        .card { background: #f1f5f9; padding: 20px; border-radius: 12px; margin-bottom: 40px; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; }
-        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; }
-        .btn-send { background-color: #10b981; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; }
-        .btn-send:hover { background-color: #059669; }
+        .sidebar-brand {
+            padding: 30px 20px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: -1px;
+            border-bottom: 1px solid #334155;
+            color: #f8fafc;
+        }
 
-        /* PHẦN LỊCH SỬ GIỐNG TRONG ẢNH (Message Feed) */
-        .history-feed { margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px; }
-        .msg-item { display: flex; margin-bottom: 25px; align-items: flex-start; }
-        .msg-avatar { width: 40px; height: 40px; background: #64748b; border-radius: 8px; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 12px; flex-shrink: 0; }
-        .msg-body { flex-grow: 1; }
-        .msg-header { display: flex; align-items: baseline; margin-bottom: 4px; }
-        .msg-author { font-weight: 700; font-size: 0.95rem; margin-right: 8px; color: #1e293b; }
-        .msg-time { font-size: 0.75rem; color: #94a3b8; }
-        .msg-content { font-size: 0.95rem; line-height: 1.5; color: #334155; white-space: pre-wrap; }
-        .msg-subject { font-weight: 700; color: #1e293b; display: block; margin-bottom: 2px; text-transform: uppercase; font-size: 0.85rem; }
+        .nav-menu { flex: 1; padding: 20px 0; }
+        
+        .nav-item {
+            width: 100%;
+            padding: 14px 24px;
+            border: none;
+            background: none;
+            color: #94a3b8;
+            text-align: left;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
 
-        .excel-info { background: #e0f2fe; padding: 10px; border-radius: 4px; border-left: 4px solid #0ea5e9; font-size: 0.85rem; margin-top: 5px; }
+        .nav-item:hover { background: #334155; color: white; }
+        .nav-item.active {
+            background: var(--primary-color);
+            color: white;
+            border-right: 4px solid #fff;
+        }
+
+        /* Vùng nội dung chính */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        header {
+            background: white;
+            padding: 20px 40px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            position: sticky;
+            top: 0;
+        }
+
+        .container {
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .form-card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+        }
+
+        .input-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #475569; font-size: 0.9rem; }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        input:focus, textarea:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+
+        .btn-send {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .btn-send:hover { background: #059669; transform: translateY(-1px); }
+        .btn-send:active { transform: translateY(0); }
+
+        /* Message Feed giống ảnh mẫu */
+        .feed-container { margin-top: 20px; }
+        .feed-item {
+            display: flex;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            background: #cbd5e1;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #475569;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .msg-content-area { flex: 1; }
+        .msg-info { display: flex; align-items: baseline; margin-bottom: 6px; }
+        .author { font-weight: 700; color: #1e293b; margin-right: 10px; }
+        .time { font-size: 0.8rem; color: #94a3b8; }
+        .subject-tag { 
+            font-weight: 800; 
+            font-size: 0.85rem; 
+            color: var(--primary-color); 
+            display: block; 
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        .message-text { color: #475569; line-height: 1.6; white-space: pre-wrap; }
+
+        .excel-badge {
+            display: inline-block;
+            background: #dcfce7;
+            color: #166534;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <div class="sidebar-header">SONION APP</div>
-        <button class="tab-btn active" onclick="openTab(event, 'tab-all')">📢 Thông báo chung</button>
-        <button class="tab-btn" onclick="openTab(event, 'tab-excel')">👥 Gửi đến nhân viên</button>
-    </div>
+    <aside class="sidebar">
+        <div class="sidebar-brand">SONION APP</div>
+        <nav class="nav-menu">
+            <button class="nav-item active" onclick="openTab(event, 'tab-all')">📢 Thông báo chung</button>
+            <button class="nav-item" onclick="openTab(event, 'tab-excel')">👥 Gửi đến nhân viên</button>
+        </nav>
+    </aside>
 
-    <div class="main-container">
-        <div class="content-header" id="header-title">Thông báo chung</div>
+    <main class="main-content">
+        <header id="header-title">Thông báo chung</header>
 
-        <div id="tab-all" class="tab-content active">
-            <div class="card">
-                <label>Tiêu đề thông báo:</label>
-                <input type="text" id="subject-all" placeholder="Ví dụ: MENU TUẦN W12.26">
-                <label>Nội dung chi tiết:</label>
-                <textarea id="message-all" rows="4" placeholder="Nhập nội dung..."></textarea>
-                <button class="btn-send" onclick="handleSend('all')">🚀 GỬI THÔNG BÁO</button>
+        <div class="container">
+            <div id="tab-all" class="tab-content">
+                <div class="form-card">
+                    <div class="input-group">
+                        <label>Tiêu đề thông báo</label>
+                        <input type="text" id="subject-all" placeholder="Ví dụ: MENU TUẦN W12.26">
+                    </div>
+                    <div class="input-group">
+                        <label>Nội dung chi tiết</label>
+                        <textarea id="message-all" rows="4" placeholder="Nhập nội dung thông báo..."></textarea>
+                    </div>
+                    <button class="btn-send" onclick="handleSend('all')">🚀 GỬI THÔNG BÁO</button>
+                </div>
+
+                <div class="feed-container" id="feed-all">
+                    </div>
             </div>
-            
-            <div class="history-feed" id="feed-all">
-                <div class="msg-item">
-                    <div class="msg-avatar">AD</div>
-                    <div class="msg-body">
-                        <div class="msg-header">
-                            <span class="msg-author">Admin Sonion</span>
-                            <span class="msg-time">Vừa xong</span>
-                        </div>
-                        <span class="msg-subject">HƯỚNG DẪN</span>
-                        <div class="msg-content">Các thông báo bạn gửi sẽ hiện tại đây theo định dạng danh sách.</div>
+
+            <div id="tab-excel" class="tab-content" style="display:none">
+                <div class="form-card">
+                    <h2 style="margin-bottom: 15px; font-size: 1.1rem;">Gửi qua File Excel</h2>
+                    <p style="margin-bottom: 20px; color: #64748b; font-size: 0.9rem;">Hệ thống sẽ tự bóc tách dữ liệu và gửi email theo từng dòng.</p>
+                    <div class="input-group">
+                        <label>Chọn file (.xlsx)</label>
+                        <input type="file" id="fileInput" accept=".xlsx, .xls">
+                    </div>
+                    <button class="btn-send" onclick="handleSend('excel')" style="background: var(--primary-color);">📤 TẢI LÊN & GỬI</button>
+                    <div style="margin-top: 15px; text-align: center;">
+                        <a href="#" onclick="downloadTemplate()" style="color: var(--primary-color); font-size: 0.85rem; font-weight: 600;">📥 Tải file mẫu tại đây</a>
                     </div>
                 </div>
+
+                <div class="feed-container" id="feed-excel"></div>
             </div>
         </div>
-
-        <div id="tab-excel" class="tab-content">
-            <div class="card">
-                <h3 style="margin-top:0">Gửi file Excel</h3>
-                <a href="#" onclick="downloadTemplate()" style="font-size: 0.8rem; color: #3882f6;">Tải file mẫu tại đây</a>
-                <br><br>
-                <label>Chọn file dữ liệu:</label>
-                <input type="file" id="fileInput" accept=".xlsx, .xls">
-                <button class="btn-send" onclick="handleSend('excel')" style="background-color: #3b82f6;">📤 GỬI THEO DANH SÁCH</button>
-            </div>
-
-            <div class="history-feed" id="feed-excel"></div>
-        </div>
-    </div>
+    </main>
 
     <script src="script.js"></script>
 </body>
