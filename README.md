@@ -3,178 +3,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sonion Communications Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>Sonion App Admin</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --bg-main: #f8fafc;
-            --sidebar: #0f172a;
-            --text-main: #1e293b;
-            --glass: rgba(255, 255, 255, 0.9);
+            --sidebar-bg: #1e293b;
+            --primary-blue: #3b82f6;
+            --bg-gray: #f1f5f9;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: var(--bg-main); display: flex; height: 100vh; color: var(--text-main); overflow: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body { display: flex; height: 100vh; background-color: white; }
 
-        /* Sidebar */
-        .sidebar { width: 280px; background: var(--sidebar); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
-        .sidebar-header { padding: 40px 24px; font-weight: 800; font-size: 1.4rem; display: flex; align-items: center; gap: 10px; }
-        .sidebar-header i { color: var(--primary); }
-
-        .nav-list { flex: 1; padding: 10px 16px; }
-        .nav-item { 
-            display: flex; align-items: center; gap: 12px; padding: 14px 16px; 
-            border-radius: 12px; cursor: pointer; transition: 0.2s; color: #94a3b8; border: none; background: none; width: 100%; font-size: 0.95rem; font-weight: 600; margin-bottom: 8px;
-        }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
-        .nav-item.active { background: var(--primary); color: white; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3); }
-
-        /* Main Content */
-        .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background: radial-gradient(circle at top right, #e0e7ff, transparent 400px); }
-        header { padding: 30px 50px; background: rgba(248, 250, 252, 0.5); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #e2e8f0; }
-        header h1 { font-size: 1.5rem; font-weight: 800; }
-
-        .content-body { padding: 40px 50px; max-width: 1000px; width: 100%; margin: 0 auto; }
-
-        /* Card */
-        .glass-card { 
-            background: var(--glass); border: 1px solid rgba(255,255,255,0.4); 
-            border-radius: 24px; padding: 32px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); margin-bottom: 30px; 
+        /* THANH LỰA CHỌN BÊN TRÁI (SIDEBAR) */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
         }
 
-        .input-label { font-size: 0.85rem; font-weight: 700; color: #64748b; margin-bottom: 10px; display: block; }
-        input[type="text"], textarea, input[type="file"] {
-            width: 100%; border: 2px solid #e2e8f0; border-radius: 16px; padding: 14px 20px; font-size: 1rem; transition: 0.2s; background: white; outline: none; margin-bottom: 20px;
+        .sidebar-brand {
+            padding: 30px 20px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-align: center;
+            border-bottom: 1px solid #334155;
+            letter-spacing: 1px;
         }
-        input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
 
-        .btn-action {
-            background: var(--primary); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 700; cursor: pointer; width: 100%; font-size: 1rem;
-            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
+        .nav-menu { padding: 20px 10px; flex-grow: 1; }
+        
+        .nav-item {
+            width: 100%;
+            padding: 12px 20px;
+            margin-bottom: 5px;
+            border: none;
+            background: none;
+            color: #94a3b8;
+            text-align: left;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.3s;
         }
-        .btn-action:hover { background: var(--primary-hover); transform: translateY(-2px); }
 
-        /* Feed */
-        .feed-item { 
-            display: flex; gap: 16px; background: white; padding: 24px; border-radius: 20px; margin-bottom: 16px; 
-            border: 1px solid #f1f5f9; animation: slideIn 0.3s ease-out;
+        .nav-item:hover { background: #334155; color: white; }
+        .nav-item.active { background: var(--primary-blue); color: white; }
+
+        /* KHU VỰC NỘI DUNG CHÍNH */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Để scroll riêng vùng Feed */
         }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .avatar { width: 45px; height: 45px; border-radius: 12px; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
-        .msg-sender { font-weight: 700; font-size: 0.95rem; }
-        .msg-time { font-size: 0.8rem; color: #94a3b8; margin-left: 10px; }
-        .msg-subject { color: var(--primary); font-weight: 800; font-size: 0.85rem; text-transform: uppercase; margin: 4px 0; display: block; }
-        .msg-text { color: #475569; line-height: 1.5; white-space: pre-wrap; }
-        .excel-tag { background: #f0fdf4; color: #16a34a; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; }
+
+        header {
+            padding: 15px 30px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* VÙNG FEED (LỊCH SỬ) */
+        #history-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px 30px;
+            display: flex;
+            flex-direction: column-reverse; /* Tin mới nhất nằm dưới cùng giống chat, hoặc bỏ nếu muốn mới nhất lên đầu */
+        }
+
+        .msg-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .avatar {
+            width: 40px; height: 40px;
+            background: #cbd5e1;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; color: #475569; flex-shrink: 0;
+        }
+
+        .msg-body { flex-grow: 1; }
+        .msg-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+        .author { font-weight: 700; font-size: 0.95rem; color: #1e293b; }
+        .time { font-size: 0.75rem; color: #94a3b8; }
+        .subject { font-weight: 700; color: #1e293b; display: block; margin-bottom: 3px; font-size: 0.9rem; text-transform: uppercase; }
+        .content-text { font-size: 0.95rem; line-height: 1.5; color: #334155; white-space: pre-wrap; }
+
+        /* KHU VỰC NHẬP LIỆU (NẰM DƯỚI CÙNG) */
+        .input-area {
+            padding: 20px 30px;
+            border-top: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        .input-box {
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .input-box input {
+            width: 100%; border: none; outline: none;
+            font-size: 1rem; font-weight: 600; margin-bottom: 10px;
+            color: #1e293b;
+        }
+
+        .input-box textarea {
+            width: 100%; border: none; outline: none;
+            font-size: 0.95rem; resize: none; min-height: 60px;
+            color: #475569;
+        }
+
+        .input-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .btn-send {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center; gap: 8px;
+            transition: 0.2s;
+        }
+
+        .btn-send:hover { background-color: #059669; }
+
+        /* TAB EXCEL */
+        .excel-section { padding: 40px; display: none; text-align: center; }
+        .excel-card {
+            max-width: 500px; margin: 0 auto;
+            padding: 40px; border: 2px dashed #cbd5e1; border-radius: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <nav class="sidebar">
-        <div class="sidebar-header"><i data-lucide="zap"></i> SONION APP</div>
-        <div class="nav-list">
-            <button class="nav-item active" id="btn-all" onclick="switchTab('all')"><i data-lucide="megaphone"></i> Thông báo chung</button>
-            <button class="nav-item" id="btn-excel" onclick="switchTab('excel')"><i data-lucide="users"></i> Gửi đến nhân viên</button>
-        </div>
-    </nav>
+    <aside class="sidebar">
+        <div class="sidebar-brand">SONION APP</div>
+        <nav class="nav-menu">
+            <button class="nav-item active" onclick="switchTab('all', this)">
+                <i data-lucide="megaphone" size="18"></i> Thông báo chung
+            </button>
+            <button class="nav-item" onclick="switchTab('excel', this)">
+                <i data-lucide="file-text" size="18"></i> Gửi đến nhân viên
+            </button>
+        </nav>
+    </aside>
 
-    <div class="main-wrapper">
-        <header><h1 id="tab-title">📢 Thông báo chung</h1></header>
+    <main class="main-content">
+        <header id="tab-title"># thong_bao</header>
 
-        <div class="content-body">
-            <div id="section-all" class="tab-pane">
-                <div class="glass-card">
-                    <span class="input-label">Tiêu đề thông báo</span>
-                    <input type="text" id="sub-all" placeholder="E.g. MENU TUẦN W12.26">
-                    <span class="input-label">Nội dung</span>
-                    <textarea id="msg-all" rows="4" placeholder="Nhập nội dung..."></textarea>
-                    <button class="btn-action" onclick="processSend('all')"><i data-lucide="send"></i> PHÁT HÀNH</button>
-                </div>
-                <div id="feed-all"></div>
-            </div>
-
-            <div id="section-excel" class="tab-pane" style="display:none">
-                <div class="glass-card">
-                    <h2 style="margin-bottom: 20px;">Gửi qua danh sách Excel</h2>
-                    <span class="input-label">Chọn tệp dữ liệu</span>
-                    <input type="file" id="file-input" accept=".xlsx, .xls">
-                    <button class="btn-action" onclick="processSend('excel')" style="background: #0f172a;"><i data-lucide="file-up"></i> TẢI LÊN & GỬI</button>
-                    <div style="margin-top: 20px; text-align: center;">
-                        <a href="#" onclick="exportTemplate()" style="color: var(--primary); font-size: 0.85rem; font-weight: 700; text-decoration: none;">📥 Tải file mẫu</a>
+        <div id="section-all" style="display: flex; flex-direction: column; height: 100%;">
+            <div id="history-container">
+                <div class="msg-item">
+                    <div class="avatar">AD</div>
+                    <div class="msg-body">
+                        <div class="msg-header">
+                            <span class="author">Admin Sonion</span>
+                            <span class="time">Hệ thống</span>
+                        </div>
+                        <div class="content-text">Chào mừng bạn! Các thông báo đã gửi sẽ xuất hiện tại đây.</div>
                     </div>
                 </div>
-                <div id="feed-excel"></div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-box">
+                    <input type="text" id="sub-all" placeholder="Tiêu đề thông báo (Ví dụ: MENU TUẦN W12.26)">
+                    <textarea id="msg-all" placeholder="Nhập nội dung chi tiết..."></textarea>
+                    <div class="input-footer">
+                        <button class="btn-send" onclick="sendAll()">
+                            <i data-lucide="send" size="16"></i> Gửi thông báo
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+
+        <div id="section-excel" class="excel-section">
+            <div class="excel-card">
+                <i data-lucide="upload-cloud" size="48" color="#94a3b8"></i>
+                <h3 style="margin: 15px 0;">Gửi theo danh sách Excel</h3>
+                <input type="file" id="file-input" accept=".xlsx, .xls" style="margin-bottom: 20px;">
+                <button class="btn-send" style="width: 100%; justify-content: center; background: #3b82f6;" onclick="sendExcel()">
+                    Xử lý & Gửi Mail
+                </button>
+                <p style="margin-top: 15px;"><a href="#" onclick="downloadTemp()" style="color: var(--primary-blue); font-size: 0.8rem;">Tải file mẫu tại đây</a></p>
+            </div>
+        </div>
+    </main>
 
     <script>
         lucide.createIcons();
-        const N8N_URL = 'DÁN_LINK_WEBHOOK_N8N_CỦA_BẠN_Ở_ĐÂY';
+        const WEBHOOK_URL = 'DÁN_WEBHOOK_N8N_CỦA_BẠN_TẠI_ĐÂY';
 
-        function switchTab(tab) {
-            // Cập nhật nút
+        function switchTab(type, btn) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById('btn-' + tab).classList.add('active');
+            btn.classList.add('active');
             
-            // Cập nhật nội dung
-            document.getElementById('section-all').style.display = tab === 'all' ? 'block' : 'none';
-            document.getElementById('section-excel').style.display = tab === 'excel' ? 'block' : 'none';
-            
-            // Cập nhật Title
-            document.getElementById('tab-title').innerText = tab === 'all' ? '📢 Thông báo chung' : '👥 Gửi đến nhân viên';
-        }
-
-        async function processSend(type) {
-            let payload = { type, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
-            
-            if (type === 'all') {
-                const s = document.getElementById('sub-all').value;
-                const m = document.getElementById('msg-all').value;
-                if(!s || !m) return alert("Vui lòng điền đủ!");
-                payload.subject = s; payload.message = m;
-            } else {
-                const f = document.getElementById('file-input');
-                if(f.files.length === 0) return alert("Chưa chọn file!");
-                const data = await f.files[0].arrayBuffer();
-                const wb = XLSX.read(data);
-                payload.data = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-                payload.filename = f.files[0].name;
-            }
-
-            try {
-                const res = await fetch(N8N_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)});
-                if(res.ok) {
-                    renderFeed(type, payload);
-                    if(type === 'all') { document.getElementById('sub-all').value = ''; document.getElementById('msg-all').value = ''; }
-                }
-            } catch(e) { alert("Lỗi gửi n8n!"); }
-        }
-
-        function renderFeed(type, data) {
-            const container = document.getElementById(type === 'all' ? 'feed-all' : 'feed-excel');
-            const div = document.createElement('div');
-            div.className = 'feed-item';
-            
-            let html = `<div class="avatar">AD</div><div style="flex:1"><div class="msg-sender">Admin Sonion <span class="msg-time">${data.time}</span></div>`;
             if(type === 'all') {
-                html += `<span class="msg-subject">${data.subject}</span><div class="msg-text">${data.message}</div>`;
+                document.getElementById('section-all').style.display = 'flex';
+                document.getElementById('section-excel').style.display = 'none';
+                document.getElementById('tab-title').innerText = '# thong_bao';
             } else {
-                html += `<div class="msg-text">Đã xử lý file gửi nhân viên</div><div class="excel-tag"><i data-lucide="file-check" style="width:14px"></i> ${data.filename} (${data.data.length} hàng)</div>`;
+                document.getElementById('section-all').style.display = 'none';
+                document.getElementById('section-excel').style.display = 'block';
+                document.getElementById('tab-title').innerText = '# gui_nhan_vien';
             }
-            html += `</div>`;
-            div.innerHTML = html;
-            container.prepend(div);
-            lucide.createIcons();
         }
 
-        function exportTemplate() {
-            const data = [["ma_nhan_vien", "tieu_de", "noi_dung", "email"], ["SN01", "Thông báo lương", "Nội dung...", "test@sonion.com"]];
+        async function sendAll() {
+            const sub = document.getElementById('sub-all').value;
+            const msg = document.getElementById('msg-all').value;
+            if(!sub || !msg) return alert("Vui lòng nhập đủ!");
+
+            const payload = {
+                type: 'all',
+                subject: sub,
+                message: msg,
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            };
+
+            // Gửi sang n8n
+            try {
+                await fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify(payload) });
+                addMessageToFeed(payload);
+                document.getElementById('sub-all').value = '';
+                document.getElementById('msg-all').value = '';
+            } catch (e) { alert("Lỗi gửi dữ liệu!"); }
+        }
+
+        function addMessageToFeed(data) {
+            const container = document.getElementById('history-container');
+            const div = document.createElement('div');
+            div.className = 'msg-item';
+            div.innerHTML = `
+                <div class="avatar">AD</div>
+                <div class="msg-body">
+                    <div class="msg-header">
+                        <span class="author">Admin Sonion</span>
+                        <span class="time">${data.time}</span>
+                    </div>
+                    <span class="subject">${data.subject}</span>
+                    <div class="content-text">${data.message}</div>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight; // Tự cuộn xuống tin mới nhất
+        }
+
+        function downloadTemp() {
+            const data = [["ma_nhan_vien", "tieu_de", "noi_dung", "email"], ["NV01", "Thông báo lương", "Nội dung...", "test@sonion.com"]];
             const ws = XLSX.utils.aoa_to_sheet(data);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
