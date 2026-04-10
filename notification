@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Tin Thông Báo Nội Bộ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Tùy chỉnh thanh cuộn cho phần lịch sử */
+        #historyContainer::-webkit-scrollbar { width: 6px; }
+        #historyContainer::-webkit-scrollbar-track { background: #f1f1f1; }
+        #historyContainer::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+        #historyContainer::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+        
+        /* Hiệu ứng load giả lập */
+        .dot-flashing { position: relative; width: 10px; height: 10px; border-radius: 5px; background-color: #94a3b8; color: #94a3b8; animation: dot-flashing 1s infinite linear alternate; animation-delay: .5s; }
+        .dot-flashing::before, .dot-flashing::after { content: ''; display: inline-block; position: absolute; top: 0; }
+        .dot-flashing::before { left: -15px; width: 10px; height: 10px; border-radius: 5px; background-color: #94a3b8; color: #94a3b8; animation: dot-flashing 1s infinite alternate; animation-delay: 0s; }
+        .dot-flashing::after { left: 15px; width: 10px; height: 10px; border-radius: 5px; background-color: #94a3b8; color: #94a3b8; animation: dot-flashing 1s infinite alternate; animation-delay: 1s; }
+        @keyframes dot-flashing { 0% { background-color: #94a3b8; } 50%, 100% { background-color: #e2e8f0; } }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-900">
+
+    <div class="flex flex-col h-screen max-w-5xl mx-auto border-x border-gray-200 bg-white shadow-lg">
+        
+        <header class="p-4 border-b border-gray-200 bg-white sticky top-0 z-10 flex items-center justify-between">
+            <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                Bảng Tin Công Ty
+            </h1>
+            <span class="text-sm text-gray-500" id="currentDate"></span>
+        </header>
+
+        <div id="historyContainer" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-8 bg-gray-50">
+            <div class="relative flex items-center justify-center">
+                <div class="absolute inset-0 flex items-center" aria-hidden="true"><div class="w-full border-t border-gray-200"></div></div>
+                <span class="relative bg-gray-50 px-3 text-sm font-medium text-gray-500">Hôm nay</span>
+            </div>
+
+            <div id="messageList" class="space-y-8">
+                <div class="flex items-start gap-3">
+                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 font-bold">HT</div>
+                    <div class="flex-1">
+                        <div class="flex items-baseline gap-2">
+                            <span class="font-semibold text-gray-900">Hệ Thống</span>
+                            <span class="text-xs text-gray-500">Vừa xong</span>
+                        </div>
+                        <div class="mt-1 text-sm text-gray-700 bg-white p-3 rounded-lg rounded-tl-none shadow-sm border border-gray-100">
+                            Chào mừng bạn đến với hệ thống thông báo. Hãy sử dụng form bên dưới để gửi tin nhắn mới. Lịch sử sẽ hiện tại đây.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="p-4 border-t border-gray-200 bg-white sticky bottom-0 z-10">
+            <form id="announcementForm" class="space-y-3">
+                <div class="flex gap-3">
+                    <input type="text" id="title" required placeholder="Tiêu đề thông báo..." class="flex-1 p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-200 focus:border-blue-500 outline-none text-sm">
+                    
+                    <label for="attachment" class="cursor-pointer flex items-center gap-1.5 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm font-medium">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                        <span id="fileStatus">Đính kèm</span>
+                        <input type="file" id="attachment" class="hidden">
+                    </label>
+                </div>
+                
+                <div class="flex gap-3 items-end">
+                    <textarea id="content" rows="2" required placeholder="Nhập nội dung chi tiết gửi đến toàn bộ nhân viên..." class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-200 focus:border-blue-500 outline-none text-sm resize-none"></textarea>
+                    
+                    <button type="submit" id="submitBtn" class="h-[52px] px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 flex items-center gap-2 disabled:opacity-50">
+                        <span class="font-bold">GỬI</span>
+                        <svg class="w-5 h-5 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </button>
+                </div>
+                <div id="imagePreview" class="hidden mt-2 p-2 border border-gray-200 rounded-lg max-w-xs relative bg-gray-50">
+                    <img src="" alt="Preview" class="max-h-32 rounded">
+                    <button type="button" id="removeFile" class="absolute top-1 right-1 bg-white rounded-full p-1 shadow hover:bg-red-50 text-red-500">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </form>
+        </footer>
+    </div>
+
+    <div id="loadingOverlay" class="fixed inset-0 bg-black/50 flex flex-col items-center justify-center z-50 hidden">
+        <div class="dot-flashing mb-4"></div>
+        <div class="text-white font-medium">Đang gửi email và lưu lịch sử...</div>
+    </div>
+
+    <script>
+        // --- CẤU HÌNH ---
+        // 1. Dán URL Webhook của n8n hoặc Power Automate vào đây
+        const WEBHOOK_URL = 'THAY_URL_WEBHOOK_CUA_BAN_TAI_DAY'; 
+        // 2. Tên người gửi mặc định hiển thị trên UI
+        const SENDER_NAME = "Admin Công Ty"; 
+        const SENDER_AVATAR_BG = "bg-blue-600"; // Màu nền avatar (Tailwind class)
+
+        const form = document.getElementById('announcementForm');
+        const messageList = document.getElementById('messageList');
+        const fileInput = document.getElementById('attachment');
+        const fileStatus = document.getElementById('fileStatus');
+        const imagePreviewContainer = document.getElementById('imagePreview');
+        const previewImg = imagePreviewContainer.querySelector('img');
+        const removeFileBtn = document.getElementById('removeFile');
+        const historyContainer = document.getElementById('historyContainer');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        // Hiển thị ngày hiện tại trên header
+        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        // --- XỬ LÝ FILE ĐÍNH KÈM ---
+        // 1. Hàm chuyển file sang Base64
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = error => reject(error);
+        });
+
+        // 2. Xử lý khi chọn file (Hiển thị preview nếu là ảnh)
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                fileStatus.innerText = file.name.length > 15 ? file.name.substring(0, 12) + "..." : file.name;
+                fileStatus.classList.add('text-blue-700', 'font-semibold');
+
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        previewImg.src = event.target.result;
+                        imagePreviewContainer.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreviewContainer.classList.add('hidden');
+                }
+            }
+        });
+
+        // 3. Xóa file đính kèm
+        removeFileBtn.addEventListener('click', () => {
+            fileInput.value = "";
+            fileStatus.innerText = "Đính kèm";
+            fileStatus.classList.remove('text-blue-700', 'font-semibold');
+            imagePreviewContainer.classList.add('hidden');
+            previewImg.src = "";
+        });
+
+        // --- XỬ LÝ KHI SUBMIT FORM ---
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Hiển thị màn hình loading
+            loadingOverlay.classList.remove('hidden');
+            document.getElementById('submitBtn').disabled = true;
+
+            let fileData = null;
+            let fileName = "";
+            let fileType = "";
+
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                fileName = file.name;
+                fileType = file.type;
+                fileData = await toBase64(file);
+            }
+
+            const now = new Date();
+            const payload = {
+                sender: SENDER_NAME,
+                title: document.getElementById('title').value,
+                content: document.getElementById('content').value,
+                fileName: fileName,
+                fileType: fileType, // Thêm type để backend xử lý đính kèm tốt hơn
+                fileContent: fileData, // Dữ liệu Base64
+                timestamp: now.toISOString(),
+                formattedTime: now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+            };
+
+            try {
+                // Gửi dữ liệu đến Webhook (Backend xử lý gửi email và lưu DB)
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    // Nếu backend xử lý xong, thêm tin nhắn vào UI lịch sử
+                    addMessageToUI(payload);
+                    
+                    // Reset form và file
+                    form.reset();
+                    removeFileBtn.click(); // Gọi sự kiện xóa file preview
+                    
+                    // Cuộn xuống tin nhắn mới nhất
+                    historyContainer.scrollTo({ top: historyContainer.scrollHeight, behavior: 'smooth' });
+                } else {
+                    throw new Error('Lỗi từ Server');
+                }
+            } catch (error) {
+                alert('Có lỗi xảy ra khi gửi thông báo. Vui lòng kiểm tra lại cấu hình Webhook.');
+                console.error(error);
+            } finally {
+                // Ẩn màn hình loading
+                loadingOverlay.classList.add('hidden');
+                document.getElementById('submitBtn').disabled = false;
+            }
+        });
+
+        // --- HÀM THÊM TIN NHẮN VÀO UI (DẠNG CHAT GIỐNG ẢNH MẪU) ---
+        function addMessageToUI(data) {
+            // Xóa tin nhắn mẫu nếu còn
+            if(messageList.querySelector('.bg-gray-300')) messageList.innerHTML = '';
+
+            const initials = data.sender.split(' ').map(n=>n[0]).join('').toUpperCase().substring(0,2);
+            
+            // Xử lý hiển thị file đính kèm trong tin nhắn
+            let attachmentHtml = '';
+            if (data.fileName) {
+                if (data.fileType && data.fileType.startsWith('image/') && data.fileContent) {
+                    // Nếu là ảnh, hiển thị ảnh preview nhỏ
+                    attachmentHtml = `
+                        <div class="mt-3 p-2 border border-gray-100 rounded-lg bg-gray-50 max-w-sm">
+                            <img src="data:${data.fileType};base64,${data.fileContent}" alt="${data.fileName}" class="max-h-60 rounded shadow-sm">
+                            <div class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                ${data.fileName}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Nếu là file thường, hiển thị icon file
+                    attachmentHtml = `
+                        <div class="mt-3 flex items-center gap-2.5 p-3 border border-gray-100 rounded-lg bg-gray-50 max-w-sm">
+                            <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            <div>
+                                <div class="text-sm font-medium text-gray-800">${data.fileName}</div>
+                                <div class="text-xs text-gray-500">File đính kèm</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            const messageHtml = `
+                <div class="flex items-start gap-3 fade-in">
+                    <div class="flex-shrink-0 w-10 h-10 rounded-full ${SENDER_AVATAR_BG} flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                        ${initials}
+                    </div>
+                    
+                    <div class="flex-1">
+                        <div class="flex items-baseline gap-2">
+                            <span class="font-semibold text-gray-900">${data.sender}</span>
+                            <span class="text-xs text-gray-400">${data.formattedTime}</span>
+                        </div>
+                        
+                        <div class="mt-1 text-sm text-gray-700 bg-white p-4 rounded-xl rounded-tl-none shadow-sm border border-gray-100">
+                            <h4 class="font-bold text-base text-gray-950 mb-1.5">${data.title}</h4>
+                            <p class="whitespace-pre-wrap">${data.content}</p>
+                            
+                            ${attachmentHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Thêm vào cuối danh sách tin nhắn
+            messageList.insertAdjacentHTML('beforeend', messageHtml);
+        }
+
+        // Tự động cuộn xuống cuối khi load trang
+        window.onload = () => {
+            historyContainer.scrollTop = historyContainer.scrollHeight;
+        };
+    </script>
+    
+    <style>
+        /* Hiệu ứng hiện dần khi thêm tin nhắn mới */
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</body>
+</html>
